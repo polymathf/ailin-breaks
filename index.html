@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fffef7">
+  <meta name="description" content="Ailin Bakery — Жетісайдағы торттар мен үй тәттілері.">
+  <title>Ailin Bakery — Әсем тәттілер</title>
+  <link rel="preload" as="image" href="assets/hero-chocolate-cake-v3.webp">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Ailin Bakery — басты бет">
+      <img class="brand-logo" src="assets/ailin-logo-reference.png" alt="">
+    </a>
+    <div class="header-actions">
+      <button class="icon-button" type="button" data-action="phone" aria-label="Байланысу">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.1 3.8 9.5 3l2 4.3-1.9 1.5a15.5 15.5 0 0 0 5.6 5.6l1.5-1.9 4.3 2-.8 2.4a2.8 2.8 0 0 1-3 1.8A17.2 17.2 0 0 1 5.3 7a2.8 2.8 0 0 1 1.8-3.2Z"/></svg>
+      </button>
+      <button class="icon-button cart-trigger" type="button" data-action="cart" aria-label="Себет">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 11.1a2 2 0 0 0 2 1.6h8.3a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="9.5" cy="20" r="1"/><circle cx="17.5" cy="20" r="1"/></svg>
+        <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+      </button>
+      <button class="icon-button menu-trigger" type="button" data-action="menu" aria-label="Мәзірді ашу">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero section-shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">ЖЕТІСАЙ КОНДИТЕРЛІК ҮЙІ</p>
+        <h1 id="hero-title"><span class="hero-word">Сіздің</span> <span class="hero-word">мерекеңізге</span> <span class="hero-word">арналған</span> <em><span class="hero-word">әсем</span> <span class="hero-word">тәттілер</span></em></h1>
+        <p class="hero-description">Махаббатпен дайындалған торттар мен тәттілер. Туған күн, мерейтой және өміріңіздегі ең маңызды сәттерге ерекше дәм сыйлаймыз.</p>
+        <div class="business-info">
+          <p class="info-label">Біздің мекенжайлар</p>
+          <ol class="locations" id="store-locations"></ol>
+          <p class="hours">Күн сайын <span id="store-hours"></span></p>
+          <div class="social-links" aria-label="Әлеуметтік желілер">
+            <button type="button" data-action="instagram"><img class="social-icon" src="https://cdn.simpleicons.org/instagram/79001F" width="14" height="14" alt="" aria-hidden="true" decoding="async">Instagram</button>
+            <button type="button" data-action="whatsapp"><img class="social-icon" src="https://cdn.simpleicons.org/whatsapp/79001F" width="14" height="14" alt="" aria-hidden="true" decoding="async">WhatsApp</button>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#catalog">Каталогты қарау <span class="icon-arrow" aria-hidden="true"></span></a>
+          <button class="button button-secondary" type="button" data-action="custom">Арнайы тапсырыс беру</button>
+        </div>
+      </div>
+      <figure class="hero-photo">
+        <img src="assets/hero-chocolate-cake-v3.webp" alt="Жидектер мен кілегеймен безендірілген шоколадты торт" fetchpriority="high">
+      </figure>
+    </section>
+
+    <section class="features" aria-label="Біздің артықшылықтарымыз">
+      <div class="feature">
+        <img class="feature-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.58.0/icons/badge-check.svg" width="24" height="24" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <div><h2>Сапалы өнім</h2><p>Таңдаулы балғын ингредиенттер</p></div>
+      </div>
+      <div class="feature">
+        <img class="feature-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.58.0/icons/cake-slice.svg" width="24" height="24" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <div><h2>Арнайы тапсырыс</h2><p>Сіз қалаған сән мен өлшем</p></div>
+      </div>
+      <div class="feature">
+        <img class="feature-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.58.0/icons/gift.svg" width="24" height="24" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <div><h2>Әсем қаптама</h2><p>Сыйлауға дайын нәзік орама</p></div>
+      </div>
+      <div class="feature">
+        <img class="feature-icon" src="https://cdn.jsdelivr.net/npm/lucide-static@1.58.0/icons/truck.svg" width="24" height="24" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <div><h2>Алып кету немесе жеткізу</h2><p>Өзіңізге ыңғайлы тәсіл</p></div>
+      </div>
+    </section>
+
+    <section class="catalog" id="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-heading section-shell">
+        <p class="eyebrow">БІЗДІҢ ТӘТТІЛЕРІМІЗ</p>
+        <h2 id="catalog-title">Әр талғамға сай <em>тәттілер</em></h2>
+      </div>
+      <nav class="category-nav" aria-label="Өнім санаттары">
+        <div class="category-nav-inner" id="category-tabs">
+          <a class="category-tab is-active" href="#catalog" data-category="all">Барлығы</a>
+          <a class="category-tab" href="#cakes" data-category="cakes">Торттар</a>
+          <a class="category-tab" href="#pastries" data-category="pastries">Пирожныйлар</a>
+          <a class="category-tab" href="#pies" data-category="pies">Пирогтар</a>
+          <a class="category-tab" href="#cupcakes" data-category="cupcakes">Капкейктер</a>
+        </div>
+      </nav>
+      <div class="catalog-sections section-shell" id="catalog-sections"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="footer">
+    <a class="brand brand-footer" href="#top" aria-label="Ailin Bakery — жоғарыға"><img class="brand-logo" src="assets/ailin-logo-reference.png" alt=""></a>
+    <p>Жетісайда махаббатпен дайындалған тәттілер.</p>
+    <a href="#catalog">Каталогқа оралу <span aria-hidden="true">↑</span></a>
+    <small>© <span id="year"></span> Ailin Bakery</small>
+  </footer>
+
+  <div class="overlay" id="cart-overlay" hidden>
+    <button class="backdrop" type="button" data-close aria-label="Терезені жабу"></button>
+    <aside class="panel cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1">
+      <div class="panel-header"><h2 id="cart-title">Себетіңіз</h2><button class="close-button" type="button" data-close aria-label="Себетті жабу"><span aria-hidden="true">×</span></button></div>
+      <div class="cart-body">
+        <div id="cart-items" class="cart-items"></div>
+        <div id="cart-empty" class="empty-state" hidden><span class="empty-mark" aria-hidden="true">♡</span><h3>Себетіңіз әзірге бос</h3><p>Көңіліңіз қалаған тәттіні таңдаңыз.</p><button class="text-link" type="button" data-action="continue-shopping">Каталогқа оралу <span class="icon-arrow" aria-hidden="true"></span></button></div>
+      </div>
+      <div class="cart-footer" id="cart-footer"><div class="cart-total"><span>Жалпы сома</span><strong id="cart-total">0 ₸</strong></div><button class="button button-light" id="checkout-button" type="button" data-action="checkout">Тапсырыс беру <span class="icon-arrow" aria-hidden="true"></span></button></div>
+    </aside>
+  </div>
+
+  <div class="overlay" id="checkout-overlay" hidden>
+    <button class="backdrop" type="button" data-close aria-label="Терезені жабу"></button>
+    <section class="panel checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkout-title" tabindex="-1">
+      <div class="checkout-topline"><p class="eyebrow">ТАПСЫРЫСТЫ РӘСІМДЕУ</p><button class="close-button" type="button" data-close aria-label="Тапсырысты жабу"><span aria-hidden="true">×</span></button></div>
+      <div class="checkout-content">
+        <h2 id="checkout-title">Сіздің <em>мәліметтеріңіз</em></h2>
+        <form id="checkout-form" novalidate>
+          <label class="field"><span>Аты-жөніңіз <b>*</b></span><input name="name" autocomplete="name" required minlength="2" placeholder="Аты-жөніңізді жазыңыз"></label>
+          <label class="field"><span>Телефон нөмірі <b>*</b></span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+7 700 000 00 00"><small class="field-error" id="phone-error"></small></label>
+          <fieldset class="delivery-choice"><legend>Алу тәсілі <b>*</b></legend>
+            <label class="choice-card is-selected"><input type="radio" name="fulfillment" value="delivery" checked><span class="radio-mark" aria-hidden="true"></span><span><strong>Жеткізу</strong><small>Құны тапсырысты растағанда есептеледі</small></span></label>
+            <label class="choice-card"><input type="radio" name="fulfillment" value="pickup"><span class="radio-mark" aria-hidden="true"></span><span><strong>Өзі алып кету</strong><small>Екі мекенжайдың бірінен алып кетіңіз</small></span></label>
+          </fieldset>
+          <label class="field conditional-field" id="address-field"><span>Жеткізу мекенжайы <b>*</b></span><input name="address" autocomplete="street-address" placeholder="Көше, үй нөмірі, пәтер"></label>
+          <label class="field conditional-field" id="pickup-field" hidden><span>Алып кететін мекенжай <b>*</b></span><select id="pickup-location" name="pickup"></select></label>
+          <label class="field"><span>Қосымша тілек <small>(міндетті емес)</small></span><textarea name="notes" rows="3" placeholder="Тортқа жазылатын сөз, қалауыңыз..."></textarea></label>
+          <div class="checkout-order" id="checkout-order"></div>
+          <div class="checkout-total"><span>Тапсырыс сомасы</span><strong id="checkout-total">0 ₸</strong></div>
+          <button class="button button-primary submit-order" type="submit">Тапсырысты растау <span class="icon-arrow" aria-hidden="true"></span></button>
+          <p class="form-message" id="checkout-message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="menu-overlay" hidden>
+    <button class="backdrop" type="button" data-close aria-label="Мәзірді жабу"></button>
+    <nav class="panel menu-panel" role="dialog" aria-modal="true" aria-label="Негізгі мәзір" tabindex="-1">
+      <div class="panel-header"><a class="brand" href="#top" aria-label="Ailin Bakery — басты бет"><img class="brand-logo" src="assets/ailin-logo-reference.png" alt=""></a><button class="close-button" type="button" data-close aria-label="Мәзірді жабу"><span aria-hidden="true">×</span></button></div>
+      <div class="menu-links"><a href="#top">Басты бет <span>01</span></a><a href="#cakes">Торттар <span>02</span></a><a href="#pastries">Пирожныйлар <span>03</span></a><a href="#pies">Пирогтар <span>04</span></a><a href="#cupcakes">Капкейктер <span>05</span></a><a href="#footer">Байланыс <span>06</span></a></div>
+      <button class="button button-primary" type="button" data-action="custom">Арнайы тапсырыс беру <span class="icon-arrow" aria-hidden="true"></span></button>
+    </nav>
+  </div>
+
+  <div class="overlay" id="custom-overlay" hidden>
+    <button class="backdrop" type="button" data-close aria-label="Терезені жабу"></button>
+    <section class="panel custom-panel" role="dialog" aria-modal="true" aria-labelledby="custom-title" tabindex="-1">
+      <div class="checkout-topline"><p class="eyebrow">ЕРЕКШЕ КҮНГЕ АРНАЛҒАН</p><button class="close-button" type="button" data-close aria-label="Тапсырысты жабу"><span aria-hidden="true">×</span></button></div>
+      <div class="checkout-content">
+        <h2 id="custom-title">Өзіңіз қалаған <em>тәтті</em></h2>
+        <p class="custom-intro">Ойыңыздағы тортты сипаттаңыз — біз сізбен хабарласып, тапсырыстың егжей-тегжейін нақтылаймыз.</p>
+        <form id="custom-form" novalidate>
+          <label class="field"><span>Аты-жөніңіз <b>*</b></span><input name="name" autocomplete="name" required minlength="2" placeholder="Аты-жөніңізді жазыңыз"></label>
+          <label class="field"><span>Телефон нөмірі <b>*</b></span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+7 700 000 00 00"></label>
+          <label class="field"><span>Қандай тәтті қажет? <b>*</b></span><textarea name="details" rows="4" required placeholder="Өлшемі, дәмі, безендірілуі..."></textarea></label>
+          <label class="field"><span>Қажетті күн</span><input name="date" type="date"></label>
+          <button class="button button-primary submit-order" type="submit">Сұраныс қалдыру <span class="icon-arrow" aria-hidden="true"></span></button>
+          <p class="form-message" id="custom-message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

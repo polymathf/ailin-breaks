@@ -1,0 +1,490 @@
+"use strict";
+
+const STORE = {
+  name: "Ailin Bakery",
+  phone: "",
+  whatsapp: "",
+  instagram: "",
+  currency: "₸",
+  workingHours: "10:00–23:00",
+  locations: [
+    "Мұхтар Әуезов көшесі, Zereky Ana сауда орталығы",
+    "Үмбетбаев базары"
+  ]
+};
+
+const CATEGORIES = [
+  { id: "cakes", title: "Торттар" },
+  { id: "pastries", title: "Пирожныйлар" },
+  { id: "pies", title: "Пирогтар" },
+  { id: "cupcakes", title: "Капкейктер" }
+];
+
+const PRODUCTS = [
+  { id: "cake-1", name: "Кілегейлі бисквит №1", price: 3000, category: "cakes", image: "cake-01.jpg" },
+  { id: "cake-2", name: "Кілегейлі бисквит №2", price: 3000, category: "cakes", image: "cake-02.jpg" },
+  { id: "cake-3", name: "Кілегейлі бисквит №3", price: 3000, category: "cakes", image: "cake-03.jpg" },
+  { id: "cake-4", name: "Кілегейлі бисквит №4", price: 3000, category: "cakes", image: "cake-04.jpg" },
+  { id: "cake-5", name: "Кілегейлі бисквит №5", price: 3000, category: "cakes", image: "cake-05.jpg" },
+  { id: "cake-6", name: "Кілегейлі бисквит №6", price: 3000, category: "cakes", image: "cake-06.jpg" },
+  { id: "cake-snickers", name: "«Сникерс» торты", price: 3500, category: "cakes", image: "cake-07.jpg" },
+  { id: "pastry-1", name: "Бисквитті пирожный №1", price: 1800, category: "pastries", image: "pastry-01.jpg" },
+  { id: "pastry-2", name: "Бисквитті пирожный №2", price: 1800, category: "pastries", image: "pastry-02.jpg" },
+  { id: "pastry-3", name: "Бисквитті пирожный №3", price: 1800, category: "pastries", image: "pastry-03.jpg" },
+  { id: "pastry-4", name: "Үлкен пирожный 60×40 №1", price: 5000, category: "pastries", image: "pastry-04.jpg" },
+  { id: "pastry-5", name: "Үлкен пирожный 60×40 №2", price: 5000, category: "pastries", image: "pastry-05.jpg" },
+  { id: "pastry-6", name: "Үлкен пирожный 60×40 №3", price: 5000, category: "pastries", image: "pastry-06.jpg" },
+  { id: "pastry-whoopie", name: "Вупи пай", price: 2400, category: "pastries", image: "pastry-07.jpg" },
+  { id: "pastry-caramel", name: "Карамельді пирожный", price: 2400, category: "pastries", image: "pastry-08.jpg" },
+  { id: "pastry-honey", name: "Бал торты", price: 2400, category: "pastries", image: "pastry-09.jpg" },
+  { id: "pastry-milk", name: "Сүтті ару пирожный", price: 2400, category: "pastries", image: "pastry-10.jpg" },
+  { id: "pie-apple", name: "Алма бәліші", price: 2200, category: "pies", image: "pie-01.jpg" },
+  { id: "pie-berry", name: "Жидекті бәліш", price: 2500, category: "pies", image: "pie-02.jpg" },
+  { id: "pie-lemon", name: "Лимонды тарт", price: 2300, category: "pies", image: "pie-03.jpg" },
+  { id: "cupcake-vanilla", name: "Ванильді капкейк", price: 900, category: "cupcakes", image: "cupcake-01.jpg" },
+  { id: "cupcake-chocolate", name: "Шоколадты капкейк", price: 1000, category: "cupcakes", image: "cupcake-02.jpg" },
+  { id: "cupcake-strawberry", name: "Құлпынайлы капкейк", price: 1000, category: "cupcakes", image: "cupcake-03.jpg" }
+];
+
+const CART_KEY = "ailin-bakery-cart-v1";
+const cart = loadCart();
+const overlays = ["cart-overlay", "checkout-overlay", "menu-overlay", "custom-overlay"];
+let returnFocus = null;
+let savedScrollY = 0;
+let toastTimer = 0;
+let activeCategoryId = null;
+let categoryScrollFrame = 0;
+let categoryScrollEndTimer = 0;
+let manualCategoryTarget = null;
+
+function formatPrice(value) {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " " + STORE.currency;
+}
+
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+    return Object.fromEntries(Object.entries(saved).filter(([id, qty]) =>
+      PRODUCTS.some(product => product.id === id) && Number.isInteger(qty) && qty > 0
+    ));
+  } catch {
+    return {};
+  }
+}
+
+function saveCart() {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function quantityInCart() {
+  return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+}
+
+function totalInCart() {
+  return PRODUCTS.reduce((sum, product) => sum + product.price * (cart[product.id] || 0), 0);
+}
+
+function getProduct(id) {
+  return PRODUCTS.find(product => product.id === id);
+}
+
+function renderStoreDetails() {
+  document.getElementById("store-hours").textContent = STORE.workingHours;
+  document.getElementById("store-locations").innerHTML = STORE.locations.map((location, index) =>
+    '<li><span>' + String(index + 1).padStart(2, "0") + '</span><span>' + location + '</span></li>'
+  ).join("");
+  document.getElementById("pickup-location").innerHTML = STORE.locations.map(location =>
+    '<option value="' + location + '">' + location + '</option>'
+  ).join("");
+}
+
+function productCard(product) {
+  return '<article class="product-card" data-product-card="' + product.id + '">' +
+    '<figure class="product-photo"><img src="assets/products/' + product.image + '" alt="' + product.name + '" loading="lazy" width="520" height="520"></figure>' +
+    '<h3 class="product-name">' + product.name + '</h3>' +
+    '<div class="product-bottom"><p class="product-price">' + formatPrice(product.price) + '</p>' +
+    '<button class="add-button" type="button" data-add="' + product.id + '" aria-label="' + product.name + ' — себетке қосу">' +
+    '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span class="add-quantity" hidden></span></button></div></article>';
+}
+
+function renderCatalog() {
+  const host = document.getElementById("catalog-sections");
+  host.innerHTML = CATEGORIES.map((category, index) => {
+    const cards = PRODUCTS.filter(product => product.category === category.id).map(productCard).join("");
+    const divider = index ? '<div class="section-divider" aria-hidden="true"></div>' : "";
+    return '<section class="product-section" id="' + category.id + '" data-section="' + category.id + '">' +
+      divider + '<h2 class="section-title">' + category.title + '</h2><div class="product-grid">' + cards + '</div></section>';
+  }).join("");
+  updateProductQuantities();
+  observeCategories();
+}
+
+function updateProductQuantities() {
+  document.querySelectorAll("[data-add]").forEach(button => {
+    const product = getProduct(button.dataset.add);
+    const qty = cart[button.dataset.add] || 0;
+    const badge = button.querySelector(".add-quantity");
+    button.classList.toggle("has-items", qty > 0);
+    badge.hidden = qty === 0;
+    badge.textContent = qty;
+    button.setAttribute("aria-label", qty ? product.name + " — себетте " + qty : product.name + " — себетке қосу");
+  });
+  document.getElementById("cart-count").textContent = quantityInCart();
+}
+
+function changeProductQuantity(id, delta) {
+  const next = (cart[id] || 0) + delta;
+  if (next > 0) cart[id] = next;
+  else delete cart[id];
+  saveCart();
+  updateProductQuantities();
+  renderCart();
+  renderCheckoutSummary();
+}
+
+function renderCart() {
+  const empty = Object.keys(cart).length === 0;
+  document.getElementById("cart-empty").hidden = !empty;
+  document.getElementById("cart-footer").hidden = empty;
+  document.getElementById("checkout-button").disabled = empty;
+  document.getElementById("cart-items").innerHTML = empty ? "" : PRODUCTS.filter(product => cart[product.id]).map(product =>
+    '<article class="cart-row" data-cart-row="' + product.id + '">' +
+      '<div class="cart-row-main"><h3>' + product.name + '</h3><p class="unit-price">' + formatPrice(product.price) + ' / дана</p></div>' +
+      '<strong class="cart-row-total">' + formatPrice(product.price * cart[product.id]) + '</strong>' +
+      '<div class="cart-controls" aria-label="' + product.name + ' санын өзгерту">' +
+        '<button class="quantity-button" type="button" data-qty="' + product.id + '" data-delta="-1" aria-label="Бір данасын азайту">−</button>' +
+        '<span class="quantity" aria-live="polite">' + cart[product.id] + '</span>' +
+        '<button class="quantity-button" type="button" data-qty="' + product.id + '" data-delta="1" aria-label="Бір данасын қосу">+</button>' +
+        '<button class="remove-button" type="button" data-remove="' + product.id + '">Алып тастау</button></div></article>'
+  ).join("");
+  document.getElementById("cart-total").textContent = formatPrice(totalInCart());
+  updateProductQuantities();
+}
+
+function renderCheckoutSummary() {
+  const host = document.getElementById("checkout-order");
+  if (!host) return;
+  host.innerHTML = PRODUCTS.filter(product => cart[product.id]).map(product =>
+    '<div class="checkout-line"><span>' + product.name + ' × ' + cart[product.id] + '</span><strong>' +
+    formatPrice(product.price * cart[product.id]) + '</strong></div>'
+  ).join("");
+  document.getElementById("checkout-total").textContent = formatPrice(totalInCart());
+}
+
+function lockPage() {
+  if (document.body.classList.contains("is-locked")) return;
+  savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  document.body.style.top = "-" + savedScrollY + "px";
+  document.body.classList.add("is-locked");
+}
+
+function unlockPage() {
+  if (!document.body.classList.contains("is-locked")) return;
+  const lockedTop = Number.parseFloat(document.body.style.top);
+  const restoreScrollY = Number.isFinite(lockedTop) ? Math.abs(lockedTop) : savedScrollY;
+  document.body.classList.remove("is-locked");
+  document.body.style.top = "";
+  const root = document.documentElement;
+  const previousScrollBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = "auto";
+  window.scrollTo(0, restoreScrollY);
+  root.style.scrollBehavior = previousScrollBehavior;
+}
+
+function closeAllOverlays() {
+  const wasOpen = overlays.some(id => !document.getElementById(id).hidden);
+  overlays.forEach(id => { document.getElementById(id).hidden = true; });
+  if (wasOpen) {
+    unlockPage();
+    if (returnFocus && document.contains(returnFocus)) returnFocus.focus({ preventScroll: true });
+  }
+}
+
+function openOverlay(id, opener) {
+  closeAllOverlays();
+  returnFocus = opener || document.activeElement;
+  lockPage();
+  const overlay = document.getElementById(id);
+  overlay.hidden = false;
+  const panel = overlay.querySelector('[role="dialog"]');
+  if (panel) requestAnimationFrame(() => panel.focus({ preventScroll: true }));
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2800);
+}
+
+function setActiveCategory(id) {
+  const changed = activeCategoryId !== id;
+  activeCategoryId = id;
+  const container = document.getElementById("category-tabs");
+  document.querySelectorAll(".category-tab").forEach(tab => {
+    const active = tab.dataset.category === id;
+    tab.classList.toggle("is-active", active);
+    if (active) {
+      tab.setAttribute("aria-current", "location");
+      if (!changed) return;
+      const tabBounds = tab.getBoundingClientRect();
+      const navBounds = container.getBoundingClientRect();
+      if (tabBounds.left < navBounds.left || tabBounds.right > navBounds.right) {
+        const nextLeft = container.scrollLeft + tabBounds.left - navBounds.left - (navBounds.width - tabBounds.width) / 2;
+        container.scrollTo({ left: nextLeft, behavior: "smooth" });
+      }
+    } else tab.removeAttribute("aria-current");
+  });
+}
+
+function getCategoryAtScrollPosition() {
+  const headerHeight = document.querySelector(".site-header").getBoundingClientRect().height;
+  const navHeight = document.querySelector(".category-nav").getBoundingClientRect().height;
+  const activationLine = headerHeight + navHeight + 12;
+  let activeId = "all";
+  for (const section of document.querySelectorAll("[data-section]")) {
+    if (section.getBoundingClientRect().top > activationLine) break;
+    activeId = section.dataset.section;
+  }
+  return activeId;
+}
+
+function syncCategoryFromScroll() {
+  if (manualCategoryTarget) {
+    window.clearTimeout(categoryScrollEndTimer);
+    categoryScrollEndTimer = window.setTimeout(() => {
+      manualCategoryTarget = null;
+      categoryScrollEndTimer = 0;
+    }, 160);
+    return;
+  }
+  if (categoryScrollFrame) return;
+  categoryScrollFrame = window.requestAnimationFrame(() => {
+    categoryScrollFrame = 0;
+    setActiveCategory(getCategoryAtScrollPosition());
+  });
+}
+
+function releaseManualCategoryTarget() {
+  if (!manualCategoryTarget) return;
+  window.clearTimeout(categoryScrollEndTimer);
+  categoryScrollEndTimer = 0;
+  manualCategoryTarget = null;
+  syncCategoryFromScroll();
+}
+
+function observeCategories() {
+  window.addEventListener("scroll", syncCategoryFromScroll, { passive: true });
+  window.addEventListener("resize", syncCategoryFromScroll);
+  window.addEventListener("wheel", releaseManualCategoryTarget, { passive: true });
+  window.addEventListener("touchstart", releaseManualCategoryTarget, { passive: true });
+  document.querySelectorAll(".category-tab").forEach(tab => tab.addEventListener("click", event => {
+    event.preventDefault();
+    const id = tab.dataset.category;
+    const target = id === "all"
+      ? document.querySelector(".catalog-heading")
+      : document.querySelector("#" + id + " .section-title");
+    if (categoryScrollFrame) {
+      window.cancelAnimationFrame(categoryScrollFrame);
+      categoryScrollFrame = 0;
+    }
+    manualCategoryTarget = id;
+    setActiveCategory(id);
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.clearTimeout(categoryScrollEndTimer);
+    categoryScrollEndTimer = window.setTimeout(() => {
+      manualCategoryTarget = null;
+      categoryScrollEndTimer = 0;
+    }, 300);
+  }));
+  syncCategoryFromScroll();
+}
+
+function initializeMotion() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+
+  const targets = document.querySelectorAll(
+    ".feature, .catalog-heading, .product-section .section-title, .product-card, .site-footer"
+  );
+  document.documentElement.classList.add("motion-ready");
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -5% 0px", threshold: 0.05 });
+
+  targets.forEach((target, index) => {
+    if (target.matches(".product-card")) {
+      target.style.setProperty("--reveal-delay", (index % 4) * 45 + "ms");
+    }
+    target.classList.add("scroll-reveal");
+    observer.observe(target);
+  });
+}
+
+function setFulfillment(value) {
+  const delivery = value === "delivery";
+  document.getElementById("address-field").hidden = !delivery;
+  document.getElementById("pickup-field").hidden = delivery;
+  document.querySelector('[name="address"]').required = delivery;
+  document.querySelector('[name="pickup"]').required = !delivery;
+  document.querySelectorAll(".choice-card").forEach(card =>
+    card.classList.toggle("is-selected", card.querySelector("input").value === value)
+  );
+}
+
+function formatKazakhPhone(value) {
+  let digits = value.replace(/\D/g, "");
+  const enteredCountryCode = /^\s*\+7/.test(value) || (digits.length === 11 && digits.startsWith("7"));
+  if (enteredCountryCode) digits = digits.slice(1);
+  else if (digits.length === 11 && digits.startsWith("8")) digits = digits.slice(1);
+  digits = digits.slice(0, 10);
+  const groups = [];
+  if (digits.length) groups.push(digits.slice(0, 3));
+  if (digits.length > 3) groups.push(digits.slice(3, 6));
+  if (digits.length > 6) groups.push(digits.slice(6, 8));
+  if (digits.length > 8) groups.push(digits.slice(8, 10));
+  return "+7" + (groups.length ? " " + groups.join(" ") : "");
+}
+
+function isValidPhone(value) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 11 && digits.startsWith("7");
+}
+
+function buildOrder(form, custom) {
+  const data = new FormData(form);
+  return {
+    customerName: String(data.get("name") || "").trim(),
+    phone: String(data.get("phone") || "").trim(),
+    fulfillment: data.get("fulfillment") || null,
+    address: data.get("fulfillment") === "pickup" ? String(data.get("pickup") || "") : String(data.get("address") || "").trim(),
+    notes: String(data.get("notes") || data.get("details") || "").trim(),
+    desiredDate: String(data.get("date") || ""),
+    products: custom ? [] : PRODUCTS.filter(product => cart[product.id]).map(product => ({
+      id: product.id, name: product.name, unitPrice: product.price, quantity: cart[product.id]
+    })),
+    totalPrice: custom ? 0 : totalInCart()
+  };
+}
+
+function sendWhatsApp(message) {
+  if (!STORE.whatsapp) return false;
+  const number = STORE.whatsapp.replace(/\D/g, "");
+  if (!number) return false;
+  window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
+  return true;
+}
+
+function handleCheckoutSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const message = document.getElementById("checkout-message");
+  const name = String(data.get("name") || "").trim();
+  const phone = String(data.get("phone") || "").trim();
+  const address = String(data.get("address") || "").trim();
+  message.textContent = "";
+  if (name.length < 2) { message.textContent = "Аты-жөніңізді толық енгізіңіз."; form.querySelector('[name="name"]').focus(); return; }
+  if (!isValidPhone(phone)) { message.textContent = "Қазақстан нөмірін +7 кодымен толық енгізіңіз."; form.querySelector('[name="phone"]').focus(); return; }
+  if (data.get("fulfillment") === "delivery" && address.length < 5) { message.textContent = "Жеткізу мекенжайын толық енгізіңіз."; form.querySelector('[name="address"]').focus(); return; }
+  const order = buildOrder(form, false);
+  const lines = order.products.map(item => item.name + " × " + item.quantity + " — " + formatPrice(item.unitPrice * item.quantity)).join("\n");
+  const text = STORE.name + " тапсырысы\nАты-жөні: " + order.customerName + "\nТелефон: " + order.phone +
+    "\nАлу тәсілі: " + (order.fulfillment === "pickup" ? "Өзі алып кету" : "Жеткізу") + "\nМекенжай: " + order.address +
+    "\n" + lines + "\nЖалпы сома: " + formatPrice(order.totalPrice) + (order.notes ? "\nҚосымша тілек: " + order.notes : "");
+  if (sendWhatsApp(text)) message.textContent = "Тапсырыс WhatsApp арқылы жіберуге дайын. Хабарламаны WhatsApp терезесінде жіберуді аяқтаңыз.";
+  else message.textContent = "Тапсырыс мәліметтері дайын. Қазір демо режимі: деректер серверге жіберілген жоқ.";
+}
+
+function handleCustomSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const message = document.getElementById("custom-message");
+  const name = String(data.get("name") || "").trim();
+  const phone = String(data.get("phone") || "").trim();
+  const details = String(data.get("details") || "").trim();
+  message.textContent = "";
+  if (name.length < 2 || details.length < 5) { message.textContent = "Аты-жөніңізді және тапсырыстың сипаттамасын толық енгізіңіз."; return; }
+  if (!isValidPhone(phone)) { message.textContent = "Қазақстан нөмірін +7 кодымен толық енгізіңіз."; form.querySelector('[name="phone"]').focus(); return; }
+  let text = STORE.name + " арнайы тапсырысы\nАты-жөні: " + name + "\nТелефон: " + phone + "\nСипаттамасы: " + details;
+  if (data.get("date")) text += "\nҚажетті күн: " + data.get("date");
+  if (sendWhatsApp(text)) message.textContent = "Сұраныс WhatsApp арқылы жіберуге дайын. Хабарламаны WhatsApp терезесінде жіберуді аяқтаңыз.";
+  else message.textContent = "Сұранысыңыз дайын. Қазір демо режимі: деректер серверге жіберілген жоқ.";
+}
+
+document.addEventListener("click", event => {
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target) return;
+  const action = target.closest("[data-action]");
+  const close = target.closest("[data-close]");
+  const qty = target.closest("[data-qty]");
+  const remove = target.closest("[data-remove]");
+  const add = target.closest("[data-add]");
+  if (close) { closeAllOverlays(); return; }
+  if (qty) { changeProductQuantity(qty.dataset.qty, Number(qty.dataset.delta)); return; }
+  if (remove) { delete cart[remove.dataset.remove]; saveCart(); renderCart(); renderCheckoutSummary(); return; }
+  if (add) { changeProductQuantity(add.dataset.add, 1); return; }
+  if (!action) return;
+  const key = action.dataset.action;
+  if (key === "cart") { renderCart(); openOverlay("cart-overlay", action); }
+  if (key === "menu") openOverlay("menu-overlay", action);
+  if (key === "checkout" && quantityInCart() > 0) {
+    renderCheckoutSummary();
+    openOverlay("checkout-overlay", document.querySelector('[data-action="cart"]'));
+  }
+  if (key === "custom") openOverlay("custom-overlay", action);
+  if (key === "continue-shopping") closeAllOverlays();
+  if (key === "phone") {
+    if (STORE.phone) window.location.href = "tel:" + STORE.phone.replace(/\s/g, "");
+    else showToast("Байланыс нөмірі әзірге енгізілмеген.");
+  }
+  if (key === "whatsapp") {
+    if (STORE.whatsapp) window.open("https://wa.me/" + STORE.whatsapp.replace(/\D/g, ""), "_blank", "noopener,noreferrer");
+    else showToast("WhatsApp нөмірі әзірге енгізілмеген.");
+  }
+  if (key === "instagram") {
+    if (STORE.instagram) window.open(STORE.instagram, "_blank", "noopener,noreferrer");
+    else showToast("Instagram парақшасының сілтемесі әзірге енгізілмеген.");
+  }
+});
+
+document.querySelectorAll('input[name="fulfillment"]').forEach(input =>
+  input.addEventListener("change", () => setFulfillment(input.value))
+);
+document.querySelectorAll('input[type="tel"]').forEach(input => {
+  input.addEventListener("input", () => {
+    input.value = formatKazakhPhone(input.value);
+    input.setSelectionRange(input.value.length, input.value.length);
+  });
+});
+document.getElementById("checkout-form").addEventListener("submit", handleCheckoutSubmit);
+document.getElementById("custom-form").addEventListener("submit", handleCustomSubmit);
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeAllOverlays();
+  if (event.key !== "Tab") return;
+  const overlay = overlays.map(id => document.getElementById(id)).find(item => !item.hidden);
+  if (!overlay) return;
+  const focusable = [...overlay.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')].filter(item => item.offsetParent !== null);
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
+document.getElementById("menu-overlay").addEventListener("click", event => {
+  if (event.target.closest(".menu-links a")) closeAllOverlays();
+});
+
+renderStoreDetails();
+renderCatalog();
+renderCart();
+renderCheckoutSummary();
+document.getElementById("year").textContent = new Date().getFullYear();
+document.querySelectorAll('[name="pickup"]')[0].required = false;
+document.querySelector('[name="address"]').required = true;
+initializeMotion();
