@@ -91,9 +91,6 @@ function renderStoreDetails() {
   document.getElementById("store-locations").innerHTML = STORE.locations.map((location, index) =>
     '<li><span>' + String(index + 1).padStart(2, "0") + '</span><span>' + location + '</span></li>'
   ).join("");
-  document.getElementById("pickup-location").innerHTML = STORE.locations.map(location =>
-    '<option value="' + location + '">' + location + '</option>'
-  ).join("");
 }
 
 function productCard(product) {
