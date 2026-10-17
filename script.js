@@ -1,15 +1,13 @@
 "use strict";
 
 const STORE = {
-  name: "Ailin Bakery",
-  phone: "",
-  whatsapp: "",
-  instagram: "",
+  name: "Кондитерлік үйі",
+  phone: "77789807983",
+  whatsapp: "77789807983",
   currency: "₸",
   workingHours: "10:00–23:00",
   locations: [
-    "Мұхтар Әуезов көшесі, Zereky Ana сауда орталығы",
-    "Үмбетбаев базары"
+    "Шұңқыркөл ауылы, Бейбітшілік көшесі, 11-үй"
   ]
 };
 
@@ -48,7 +46,7 @@ const PRODUCTS = [
 
 const CART_KEY = "ailin-bakery-cart-v1";
 const cart = loadCart();
-const overlays = ["cart-overlay", "checkout-overlay", "menu-overlay", "custom-overlay"];
+const overlays = ["cart-overlay", "menu-overlay"];
 let returnFocus = null;
 let savedScrollY = 0;
 let toastTimer = 0;
@@ -139,7 +137,6 @@ function changeProductQuantity(id, delta) {
   saveCart();
   updateProductQuantities();
   renderCart();
-  renderCheckoutSummary();
 }
 
 function renderCart() {
@@ -159,16 +156,6 @@ function renderCart() {
   ).join("");
   document.getElementById("cart-total").textContent = formatPrice(totalInCart());
   updateProductQuantities();
-}
-
-function renderCheckoutSummary() {
-  const host = document.getElementById("checkout-order");
-  if (!host) return;
-  host.innerHTML = PRODUCTS.filter(product => cart[product.id]).map(product =>
-    '<div class="checkout-line"><span>' + product.name + ' × ' + cart[product.id] + '</span><strong>' +
-    formatPrice(product.price * cart[product.id]) + '</strong></div>'
-  ).join("");
-  document.getElementById("checkout-total").textContent = formatPrice(totalInCart());
 }
 
 function lockPage() {
@@ -326,96 +313,19 @@ function initializeMotion() {
   });
 }
 
-function setFulfillment(value) {
-  const delivery = value === "delivery";
-  document.getElementById("address-field").hidden = !delivery;
-  document.getElementById("pickup-field").hidden = delivery;
-  document.querySelector('[name="address"]').required = delivery;
-  document.querySelector('[name="pickup"]').required = !delivery;
-  document.querySelectorAll(".choice-card").forEach(card =>
-    card.classList.toggle("is-selected", card.querySelector("input").value === value)
+function buildCartWhatsAppMessage() {
+  const lines = PRODUCTS.filter(product => cart[product.id]).map(product =>
+    product.name + " × " + cart[product.id] + " — " + formatPrice(product.price * cart[product.id])
   );
+  return [STORE.name + " — тапсырыс", ...lines, "Жалпы сома: " + formatPrice(totalInCart())].join("\n");
 }
 
-function formatKazakhPhone(value) {
-  let digits = value.replace(/\D/g, "");
-  const enteredCountryCode = /^\s*\+7/.test(value) || (digits.length === 11 && digits.startsWith("7"));
-  if (enteredCountryCode) digits = digits.slice(1);
-  else if (digits.length === 11 && digits.startsWith("8")) digits = digits.slice(1);
-  digits = digits.slice(0, 10);
-  const groups = [];
-  if (digits.length) groups.push(digits.slice(0, 3));
-  if (digits.length > 3) groups.push(digits.slice(3, 6));
-  if (digits.length > 6) groups.push(digits.slice(6, 8));
-  if (digits.length > 8) groups.push(digits.slice(8, 10));
-  return "+7" + (groups.length ? " " + groups.join(" ") : "");
-}
-
-function isValidPhone(value) {
-  const digits = value.replace(/\D/g, "");
-  return digits.length === 11 && digits.startsWith("7");
-}
-
-function buildOrder(form, custom) {
-  const data = new FormData(form);
-  return {
-    customerName: String(data.get("name") || "").trim(),
-    phone: String(data.get("phone") || "").trim(),
-    fulfillment: data.get("fulfillment") || null,
-    address: data.get("fulfillment") === "pickup" ? String(data.get("pickup") || "") : String(data.get("address") || "").trim(),
-    notes: String(data.get("notes") || data.get("details") || "").trim(),
-    desiredDate: String(data.get("date") || ""),
-    products: custom ? [] : PRODUCTS.filter(product => cart[product.id]).map(product => ({
-      id: product.id, name: product.name, unitPrice: product.price, quantity: cart[product.id]
-    })),
-    totalPrice: custom ? 0 : totalInCart()
-  };
-}
-
-function sendWhatsApp(message) {
-  if (!STORE.whatsapp) return false;
+function sendWhatsApp(message = "") {
   const number = STORE.whatsapp.replace(/\D/g, "");
   if (!number) return false;
-  window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
+  const text = message ? "?text=" + encodeURIComponent(message) : "";
+  window.location.href = "https://wa.me/" + number + text;
   return true;
-}
-
-function handleCheckoutSubmit(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const data = new FormData(form);
-  const message = document.getElementById("checkout-message");
-  const name = String(data.get("name") || "").trim();
-  const phone = String(data.get("phone") || "").trim();
-  const address = String(data.get("address") || "").trim();
-  message.textContent = "";
-  if (name.length < 2) { message.textContent = "Аты-жөніңізді толық енгізіңіз."; form.querySelector('[name="name"]').focus(); return; }
-  if (!isValidPhone(phone)) { message.textContent = "Қазақстан нөмірін +7 кодымен толық енгізіңіз."; form.querySelector('[name="phone"]').focus(); return; }
-  if (data.get("fulfillment") === "delivery" && address.length < 5) { message.textContent = "Жеткізу мекенжайын толық енгізіңіз."; form.querySelector('[name="address"]').focus(); return; }
-  const order = buildOrder(form, false);
-  const lines = order.products.map(item => item.name + " × " + item.quantity + " — " + formatPrice(item.unitPrice * item.quantity)).join("\n");
-  const text = STORE.name + " тапсырысы\nАты-жөні: " + order.customerName + "\nТелефон: " + order.phone +
-    "\nАлу тәсілі: " + (order.fulfillment === "pickup" ? "Өзі алып кету" : "Жеткізу") + "\nМекенжай: " + order.address +
-    "\n" + lines + "\nЖалпы сома: " + formatPrice(order.totalPrice) + (order.notes ? "\nҚосымша тілек: " + order.notes : "");
-  if (sendWhatsApp(text)) message.textContent = "Тапсырыс WhatsApp арқылы жіберуге дайын. Хабарламаны WhatsApp терезесінде жіберуді аяқтаңыз.";
-  else message.textContent = "Тапсырыс мәліметтері дайын. Қазір демо режимі: деректер серверге жіберілген жоқ.";
-}
-
-function handleCustomSubmit(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const data = new FormData(form);
-  const message = document.getElementById("custom-message");
-  const name = String(data.get("name") || "").trim();
-  const phone = String(data.get("phone") || "").trim();
-  const details = String(data.get("details") || "").trim();
-  message.textContent = "";
-  if (name.length < 2 || details.length < 5) { message.textContent = "Аты-жөніңізді және тапсырыстың сипаттамасын толық енгізіңіз."; return; }
-  if (!isValidPhone(phone)) { message.textContent = "Қазақстан нөмірін +7 кодымен толық енгізіңіз."; form.querySelector('[name="phone"]').focus(); return; }
-  let text = STORE.name + " арнайы тапсырысы\nАты-жөні: " + name + "\nТелефон: " + phone + "\nСипаттамасы: " + details;
-  if (data.get("date")) text += "\nҚажетті күн: " + data.get("date");
-  if (sendWhatsApp(text)) message.textContent = "Сұраныс WhatsApp арқылы жіберуге дайын. Хабарламаны WhatsApp терезесінде жіберуді аяқтаңыз.";
-  else message.textContent = "Сұранысыңыз дайын. Қазір демо режимі: деректер серверге жіберілген жоқ.";
 }
 
 document.addEventListener("click", event => {
@@ -428,43 +338,25 @@ document.addEventListener("click", event => {
   const add = target.closest("[data-add]");
   if (close) { closeAllOverlays(); return; }
   if (qty) { changeProductQuantity(qty.dataset.qty, Number(qty.dataset.delta)); return; }
-  if (remove) { delete cart[remove.dataset.remove]; saveCart(); renderCart(); renderCheckoutSummary(); return; }
+  if (remove) { delete cart[remove.dataset.remove]; saveCart(); renderCart(); return; }
   if (add) { changeProductQuantity(add.dataset.add, 1); return; }
   if (!action) return;
   const key = action.dataset.action;
   if (key === "cart") { renderCart(); openOverlay("cart-overlay", action); }
   if (key === "menu") openOverlay("menu-overlay", action);
-  if (key === "checkout" && quantityInCart() > 0) {
-    renderCheckoutSummary();
-    openOverlay("checkout-overlay", document.querySelector('[data-action="cart"]'));
+  if (key === "checkout" && quantityInCart() > 0 && !sendWhatsApp(buildCartWhatsAppMessage())) {
+    showToast("WhatsApp нөмірі әзірге енгізілмеген.");
   }
-  if (key === "custom") openOverlay("custom-overlay", action);
   if (key === "continue-shopping") closeAllOverlays();
   if (key === "phone") {
     if (STORE.phone) window.location.href = "tel:" + STORE.phone.replace(/\s/g, "");
     else showToast("Байланыс нөмірі әзірге енгізілмеген.");
   }
   if (key === "whatsapp") {
-    if (STORE.whatsapp) window.open("https://wa.me/" + STORE.whatsapp.replace(/\D/g, ""), "_blank", "noopener,noreferrer");
-    else showToast("WhatsApp нөмірі әзірге енгізілмеген.");
-  }
-  if (key === "instagram") {
-    if (STORE.instagram) window.open(STORE.instagram, "_blank", "noopener,noreferrer");
-    else showToast("Instagram парақшасының сілтемесі әзірге енгізілмеген.");
+    if (!sendWhatsApp()) showToast("WhatsApp нөмірі әзірге енгізілмеген.");
   }
 });
 
-document.querySelectorAll('input[name="fulfillment"]').forEach(input =>
-  input.addEventListener("change", () => setFulfillment(input.value))
-);
-document.querySelectorAll('input[type="tel"]').forEach(input => {
-  input.addEventListener("input", () => {
-    input.value = formatKazakhPhone(input.value);
-    input.setSelectionRange(input.value.length, input.value.length);
-  });
-});
-document.getElementById("checkout-form").addEventListener("submit", handleCheckoutSubmit);
-document.getElementById("custom-form").addEventListener("submit", handleCustomSubmit);
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeAllOverlays();
   if (event.key !== "Tab") return;
@@ -477,14 +369,11 @@ document.addEventListener("keydown", event => {
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 });
 document.getElementById("menu-overlay").addEventListener("click", event => {
-  if (event.target.closest(".menu-links a")) closeAllOverlays();
+  if (event.target.closest(".menu-links a, .menu-panel > a.button")) closeAllOverlays();
 });
 
 renderStoreDetails();
 renderCatalog();
 renderCart();
-renderCheckoutSummary();
 document.getElementById("year").textContent = new Date().getFullYear();
-document.querySelectorAll('[name="pickup"]')[0].required = false;
-document.querySelector('[name="address"]').required = true;
 initializeMotion();
