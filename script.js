@@ -30,7 +30,7 @@ const PRODUCTS = [
   { id: "cake-chocolate", name: "Шоколадный торт", price: 5000, category: "cakes", image: "4.jpeg" },
   { id: "cake-snickers", name: "Сникерс", price: 5000, category: "cakes", image: "1.jpeg" },
 
-  { id: "pastry-whoopie-pie", name: "Ассорти «Красный бархат, Фисташковый, Ванильный»", price: 5000, category: "pastries", image: "12.jpeg" },
+  { id: "pastry-whoopie-pie", name: "Ассорти «Красный бархат, Фисташковый, Ванильный»", price: 400, category: "pastries", image: "12.jpeg" },
 
   { id: "pie-pistachio", name: "Фисташковый пирог", price: 4000, category: "pies", image: "6.jpeg" },
   { id: "pie-snickers", name: "Сникерс", price: 4000, category: "pies", image: "7.jpeg" },
