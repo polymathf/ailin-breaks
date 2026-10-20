@@ -21,6 +21,8 @@ const CATEGORIES = [
   { id: "traifl", title: "Трайфл" },
   { id: "samsa", title: "Самса, Чебурек" },
   { id: "tea", title: "Чайный набор" },
+  { id: "buns", title: "Булочки" },
+  { id: "chicken", title: "Голень и крылья" },
 ];
 
 
@@ -38,6 +40,7 @@ const PRODUCTS = [
   { id: "pie-cottage-cheese", name: "Творожный пирог", price: 4000, category: "pies", image: "8.jpeg" },
   { id: "pie-banana", name: "Банановый пирог", price: 4000, category: "pies", image: "9.jpeg" },
   { id: "pie-yogurt", name: "Йогуртовый пирог", price: 4000, category: "pies", image: "10.jpeg" },
+  { id: "pie-assorti", name: "Ассорти пирог", price: 4000, category: "pies", image: "5.jpeg" },
 
   { id: "cupcake-vanilla", name: "Ванильді капкейк", price: 500, category: "cupcakes", image: "cupcake-01.jpg" },
   { id: "cupcake-chocolate", name: "Шоколадты капкейк", price: 500, category: "cupcakes", image: "cupcake-02.jpg" },
@@ -58,6 +61,12 @@ const PRODUCTS = [
 
   { id: "tea-1", name: "Трубочки, Сочник, Профитроли, Кекс", price: 200, category: "tea", image: "22.jpeg" },
   { id: "tea-2", name: "Чайный набор №2", price: 200, category: "tea", image: "23.jpeg" },
+
+  { id: "buns-1", name: "Булочки", price: 100, category: "buns", image: "24.jpeg" },
+
+  { id: "chicken-1", name: "Крылья", price: 400, category: "chicken", image: "26.jpeg" },
+  { id: "chicken-2", name: "Голень", price: 400, category: "chicken", image: "25.jpeg" },
+
 ];
 
 
