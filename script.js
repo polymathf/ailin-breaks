@@ -5,10 +5,7 @@ const STORE = {
   phone: "77789807983",
   whatsapp: "77789807983",
   currency: "₸",
-  workingHours: "10:00–23:00",
-  locations: [
-    "Шұңқыркөл ауылы, Бейбітшілік көшесі, 11-үй"
-  ]
+  workingHours: "10:00–23:00"
 };
 
 const CATEGORIES = [
@@ -121,9 +118,6 @@ function getDisplayPrice(product) {
 
 function renderStoreDetails() {
   document.getElementById("store-hours").textContent = STORE.workingHours;
-  document.getElementById("store-locations").innerHTML = STORE.locations.map((location, index) =>
-    '<li><span>' + String(index + 1).padStart(2, "0") + '</span><span>' + location + '</span></li>'
-  ).join("");
 }
 
 function productCard(product) {
