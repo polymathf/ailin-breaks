@@ -57,7 +57,7 @@ const PRODUCTS = [
   { id: "samsa-2", name: "Чебурек", price: 250, category: "samsa", image: "20.jpeg" },
 
   { id: "tea-1", name: "Трубочки, Сочник, Профитроли, Кекс", price: 200, category: "tea", image: "22.jpeg" },
-  { id: "tea-1", name: "Чайный набор №2", price: 200, category: "tea", image: "23.jpeg" },
+  { id: "tea-2", name: "Чайный набор №2", price: 200, category: "tea", image: "23.jpeg" },
 ];
 
 
