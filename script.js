@@ -15,34 +15,51 @@ const CATEGORIES = [
   { id: "cakes", title: "Торттар" },
   { id: "pastries", title: "Пирожныйлар" },
   { id: "pies", title: "Пирогтар" },
-  { id: "cupcakes", title: "Капкейктер" }
+  { id: "cupcakes", title: "Капкейктер" },
+  { id: "eskimo", title: "Эскимо" },
+  { id: "large-cakes", title: "Үлкен торттар" },
+  { id: "traifl", title: "Трайфл" },
+  { id: "samsa", title: "Самса, Чебурек" },
+  { id: "tea", title: "Чайный набор" },
 ];
 
+
 const PRODUCTS = [
-  { id: "cake-1", name: "Кілегейлі бисквит №1", price: 3000, category: "cakes", image: "cake-01.jpg" },
-  { id: "cake-2", name: "Кілегейлі бисквит №2", price: 3000, category: "cakes", image: "cake-02.jpg" },
-  { id: "cake-3", name: "Кілегейлі бисквит №3", price: 3000, category: "cakes", image: "cake-03.jpg" },
-  { id: "cake-4", name: "Кілегейлі бисквит №4", price: 3000, category: "cakes", image: "cake-04.jpg" },
-  { id: "cake-5", name: "Кілегейлі бисквит №5", price: 3000, category: "cakes", image: "cake-05.jpg" },
-  { id: "cake-6", name: "Кілегейлі бисквит №6", price: 3000, category: "cakes", image: "cake-06.jpg" },
-  { id: "cake-snickers", name: "«Сникерс» торты", price: 3500, category: "cakes", image: "cake-07.jpg" },
-  { id: "pastry-1", name: "Бисквитті пирожный №1", price: 1800, category: "pastries", image: "pastry-01.jpg" },
-  { id: "pastry-2", name: "Бисквитті пирожный №2", price: 1800, category: "pastries", image: "pastry-02.jpg" },
-  { id: "pastry-3", name: "Бисквитті пирожный №3", price: 1800, category: "pastries", image: "pastry-03.jpg" },
-  { id: "pastry-4", name: "Үлкен пирожный 60×40 №1", price: 5000, category: "pastries", image: "pastry-04.jpg" },
-  { id: "pastry-5", name: "Үлкен пирожный 60×40 №2", price: 5000, category: "pastries", image: "pastry-05.jpg" },
-  { id: "pastry-6", name: "Үлкен пирожный 60×40 №3", price: 5000, category: "pastries", image: "pastry-06.jpg" },
-  { id: "pastry-whoopie", name: "Вупи пай", price: 2400, category: "pastries", image: "pastry-07.jpg" },
-  { id: "pastry-caramel", name: "Карамельді пирожный", price: 2400, category: "pastries", image: "pastry-08.jpg" },
-  { id: "pastry-honey", name: "Бал торты", price: 2400, category: "pastries", image: "pastry-09.jpg" },
-  { id: "pastry-milk", name: "Сүтті ару пирожный", price: 2400, category: "pastries", image: "pastry-10.jpg" },
-  { id: "pie-apple", name: "Алма бәліші", price: 2200, category: "pies", image: "pie-01.jpg" },
-  { id: "pie-berry", name: "Жидекті бәліш", price: 2500, category: "pies", image: "pie-02.jpg" },
-  { id: "pie-lemon", name: "Лимонды тарт", price: 2300, category: "pies", image: "pie-03.jpg" },
-  { id: "cupcake-vanilla", name: "Ванильді капкейк", price: 900, category: "cupcakes", image: "cupcake-01.jpg" },
-  { id: "cupcake-chocolate", name: "Шоколадты капкейк", price: 1000, category: "cupcakes", image: "cupcake-02.jpg" },
-  { id: "cupcake-strawberry", name: "Құлпынайлы капкейк", price: 1000, category: "cupcakes", image: "cupcake-03.jpg" }
+  { id: "cake-red-velvet", name: "Красный бархат", price: 5000, category: "cakes", image: "2.jpeg" },
+  { id: "cake-pistachio", name: "Фисташковый торт", price: 5000, category: "cakes", image: "3.jpeg" },
+  { id: "cake-cream", name: "Кілегей", price: 5000, category: "cakes", image: "cake-01.jpg" },
+  { id: "cake-chocolate", name: "Шоколадный торт", price: 5000, category: "cakes", image: "4.jpeg" },
+  { id: "cake-snickers", name: "Сникерс", price: 5000, category: "cakes", image: "1.jpeg" },
+
+  { id: "pastry-whoopie-pie", name: "Ассорти «Красный бархат, Фисташковый, Ванильный»", price: 5000, category: "pastries", image: "12.jpeg" },
+
+  { id: "pie-pistachio", name: "Фисташковый пирог", price: 4000, category: "pies", image: "6.jpeg" },
+  { id: "pie-snickers", name: "Сникерс", price: 4000, category: "pies", image: "7.jpeg" },
+  { id: "pie-cottage-cheese", name: "Творожный пирог", price: 4000, category: "pies", image: "8.jpeg" },
+  { id: "pie-banana", name: "Банановый пирог", price: 4000, category: "pies", image: "9.jpeg" },
+  { id: "pie-yogurt", name: "Йогуртовый пирог", price: 4000, category: "pies", image: "10.jpeg" },
+
+  { id: "cupcake-vanilla", name: "Ванильді капкейк", price: 500, category: "cupcakes", image: "cupcake-01.jpg" },
+  { id: "cupcake-chocolate", name: "Шоколадты капкейк", price: 500, category: "cupcakes", image: "cupcake-02.jpg" },
+  { id: "cupcake-assorted", name: "Капкейк", price: 500, category: "cupcakes", image: "11.jpeg" },
+
+  { id: "eskimo-assorted-1", name: "Эскимо", price: 700, category: "eskimo", image: "13.jpeg" },
+  { id: "eskimo-assorted-2", name: "Эскимо", price: 700, category: "eskimo", image: "14.jpeg" },
+
+  { id: "large-cake-1", name: "Заказной №1", price: 10000, category: "large-cakes", image: "16.jpeg" },
+  { id: "large-cake-2", name: "Заказной №2", price: 10000, category: "large-cakes", image: "17.jpeg" },
+  { id: "large-cake-3", name: "Заказной №3", price: 10000, category: "large-cakes", image: "15.jpeg" },
+  { id: "large-cake-4", name: "Заказной №4", price: 10000, category: "large-cakes", image: "18.jpeg" },
+
+  { id: "traifl-1", name: "Трайфл Ассорти", price: 600, category: "traifl", image: "19.jpeg" },
+  
+  { id: "samsa-1", name: "Самса", price: 250, category: "samsa", image: "21.jpeg" },
+  { id: "samsa-2", name: "Чебурек", price: 250, category: "samsa", image: "20.jpeg" },
+
+  { id: "tea-1", name: "Трубочки, Сочник, Профитроли, Кекс", price: 200, category: "tea", image: "22.jpeg" },
+  { id: "tea-1", name: "Чайный набор №2", price: 200, category: "tea", image: "23.jpeg" },
 ];
+
 
 const CART_KEY = "ailin-bakery-cart-v1";
 const cart = loadCart();
@@ -86,6 +103,13 @@ function getProduct(id) {
   return PRODUCTS.find(product => product.id === id);
 }
 
+function getDisplayPrice(product) {
+  if (product.category === "large-cakes") {
+    return "6 000–10 000 ₸ / кг";
+  }
+  return formatPrice(product.price);
+}
+
 function renderStoreDetails() {
   document.getElementById("store-hours").textContent = STORE.workingHours;
   document.getElementById("store-locations").innerHTML = STORE.locations.map((location, index) =>
@@ -97,7 +121,7 @@ function productCard(product) {
   return '<article class="product-card" data-product-card="' + product.id + '">' +
     '<figure class="product-photo"><img src="assets/products/' + product.image + '" alt="' + product.name + '" loading="lazy" width="520" height="520"></figure>' +
     '<h3 class="product-name">' + product.name + '</h3>' +
-    '<div class="product-bottom"><p class="product-price">' + formatPrice(product.price) + '</p>' +
+    '<div class="product-bottom"><p class="product-price">' + getDisplayPrice(product) + '</p>' +
     '<button class="add-button" type="button" data-add="' + product.id + '" aria-label="' + product.name + ' — себетке қосу">' +
     '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span class="add-quantity" hidden></span></button></div></article>';
 }
